@@ -2,6 +2,7 @@ from filter_notebooks import strip_text
 from hypothesis import given
 import hypothesis.strategies as st
 
+
 @given(
     pre_code_delim=st.characters(),
     code_delim=st.characters(),
