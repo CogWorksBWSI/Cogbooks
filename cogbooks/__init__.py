@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 
-def strip_text(text):
+def strip_text(text: str) -> str:
     """
     Filters text between delimiters from markdown file
 
@@ -27,7 +27,7 @@ def strip_text(text):
     return re.sub(r"<COGINST>(.*?)</COGINST>", "*SOLUTION HERE*", stu_notebook)
 
 
-def make_student_files(path, outdir, force):
+def make_student_files(path: Path, outdir: Path, force: bool) -> bool:
     """
     Creates student Jupyter notebooks given Jupytext markdown files
 
@@ -41,6 +41,10 @@ def make_student_files(path, outdir, force):
 
     force : bool
         Signals that existing student notebooks should be overwritten
+
+    Returns
+    -------
+    Returns False if no file was written
     """
 
     if path.is_file() and path.suffix == ".md":
@@ -49,27 +53,39 @@ def make_student_files(path, outdir, force):
             # as Regex requires singular line of text
             stu_notebook = strip_text(repr(f.read()))
 
-        file_path = outdir / (str(path.stem) + "_STUDENT.md")
-        mode = "w" if force else "x"
+        file_path = outdir / (path.name[:-3] + "_STUDENT.md")
 
-        with open(file_path, mode) as f:
+        if not force and (file_path.parent / (file_path.stem + '.ipynb')).exists():
+            print(file_path.stem + '.ipynb' + " exists.. skipping file")
+            return False
+
+        with open(file_path, 'w') as f:
             # Apply eval to convert raw string to string
             # and recover newline formatting for output file
             # (Jupytext doesn't properly convert markdown if not done)
             f.write(eval(stu_notebook))
 
-        # Convert to ipynb, silencing outputs from Jupytext
-        os.system(f"jupytext {file_path} --to notebook >/dev/null 2>&1")
+        # Convert to ipynb
+        os.system(f'jupytext "{file_path.absolute()}" --to notebook')
         # Remove student markdown file
-        os.system(f"rm {file_path}")
+        os.remove(file_path)
+        return True
 
-    elif path.is_dir():
-        for p in path.iterdir():
-            if p.stem[0] != ".":
-                make_student_files(p, outdir, force)
+    elif path.is_file():
+        return False
+
+    if not path.is_dir():
+        print(f"{path.resolve().absolute()} does not exist")
+        return False
+
+    written = False
+    for p in path.iterdir():
+        if p.stem[0] != ".":
+            written |= make_student_files(p, outdir, force)
+    return written
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -81,16 +97,29 @@ if __name__ == "__main__":
         help="overwrites existing student notebooks",
         action="store_true",
     )
-    parser.add_argument("files", nargs="*")
+    parser.add_argument("files", nargs="*", )
 
     args = parser.parse_args()
 
-    if args.dir is not None:
-        out = Path(args.dir)
-    else:
-        out = Path(str(Path(".").absolute()) + "_STUDENT")
-    if not out.exists():
-        out.mkdir()
-
+    written = False
     for p in args.files:
-        make_student_files(Path(p), out, args.force)
+        p = Path(p)
+        if args.dir is not None:
+            out = Path(args.dir)
+
+            if not out.exists():
+                out.mkdir()
+        elif p.is_file():
+            out = p.parent
+        else:
+            out = p.resolve()
+
+        written |= make_student_files(p, out, args.force)
+
+    if not written:
+        print(f"No files were written. The provided file-paths were: {' '.join(args.files)}")
+
+
+if __name__ == "__main__":
+    main()
+
