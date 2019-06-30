@@ -1,4 +1,4 @@
-from filter_notebooks import strip_text
+from cogbooks.__init__ import strip_text
 from hypothesis import given
 import hypothesis.strategies as st
 
