@@ -35,6 +35,10 @@ def test_multiple_files_in_dir_where_some_exist(num_files: int, already_exists: 
     for i in range(num_files):
         shutil.copy("test_files/test.md", f"dummy/test{i}.md")
 
+    assert all(
+        [not Path(f"dummy/test{i}_STUDENT.ipynb").exists() for i in range(num_files)]
+    )
+
     for i in already_exists:
         Path(f"dummy/test{i}_STUDENT.ipynb").touch()
 
@@ -55,6 +59,10 @@ def test_multiple_files_where_some_exist(num_files: int, already_exists: list):
     Path("./dummy").mkdir(exist_ok=True)
     for i in range(num_files):
         shutil.copy("test_files/test.md", f"dummy/test{i}.md")
+
+    assert all(
+        [not Path(f"dummy/test{i}_STUDENT.ipynb").exists() for i in range(num_files)]
+    )
 
     for i in already_exists:
         Path(f"dummy/test{i}_STUDENT.ipynb").touch()
