@@ -83,7 +83,7 @@ def test_multiple_files_in_dir_where_some_exist(
         [(dummy_dir / f"test{i}_STUDENT.ipynb").exists() for i in range(num_files)]
     )
 
-    # ensure pre-existing ipynb files are overwritted only when --force was specified
+    # ensure pre-existing ipynb files are overwritten only when --force was specified
     # otherwise they should be empty
     for i in already_exists:
         if not force:
