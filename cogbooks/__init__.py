@@ -117,7 +117,7 @@ def main():
         written |= make_student_files(p, out, args.force)
 
     if not written:
-        print(f"No files were written. The provided file-paths were: {''.join(args.files)}")
+        print(f"No files were written. The provided file-paths were: {' '.join(args.files)}")
 
 
 if __name__ == "__main__":
