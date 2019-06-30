@@ -65,7 +65,7 @@ def make_student_files(path: Path, outdir: Path, force: bool) -> bool:
             # (Jupytext doesn't properly convert markdown if not done)
             f.write(eval(stu_notebook))
 
-        # Convert to ipynb, silencing outputs from Jupytext
+        # Convert to ipynb
         os.system(f'jupytext "{file_path.absolute()}" --to notebook')
         # Remove student markdown file
         os.remove(file_path)
