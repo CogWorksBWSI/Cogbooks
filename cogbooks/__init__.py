@@ -51,7 +51,7 @@ def make_student_files(path: Path, outdir: Path, force: bool):
 
         file_path = outdir / (str(path.stem) + "_STUDENT.md")
 
-        if Path(file_path.stem + '.ipynb').exists():
+        if not force and Path(file_path.stem + '.ipynb').exists():
             print(file_path.stem + '.ipynb' + " exists.. skipping file")
             return
 
@@ -84,7 +84,6 @@ def main():
         "-f",
         help="overwrites existing student notebooks",
         action="store_true",
-        default=False,
     )
     parser.add_argument("files", nargs="*", )
 
