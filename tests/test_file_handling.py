@@ -1,36 +1,43 @@
 from pathlib import Path
 import os
 
+tests_dir = Path(Path(__file__).resolve().parent)
+jupy_dir = Path(tests_dir.parent)
+
 
 def test_default_dir():
-    os.system(f"cd {Path('./tests/test_files')}\npython {Path('../../filter_notebooks.py')} ./")
-    tmpdir = Path(str(Path("./tests/test_files").absolute()) + "_STUDENT")
+    os.system(
+        f"cd {tests_dir / 'test_files'}\npython {jupy_dir / 'filter_notebooks.py'} ./"
+    )
+    tmpdir = Path(str(tests_dir / "test_files") + "_STUDENT")
 
     assert tmpdir.exists() and tmpdir.is_dir()
     for file in tmpdir.iterdir():
-        assert Path("./tests/test_files/" + str(file.stem)[:-8] + ".md").exists()
+        assert (tests_dir / ("test_files/" + str(file.stem)[:-8] + ".md")).exists()
 
     os.system(f"rm -rf {tmpdir}")
 
 
 def test_option_dir():
-    tmpdir = Path(".").resolve() / "tests/temp_dir"
+    tmpdir = tests_dir / "temp_dir"
     os.system(
-        f"python {Path('./filter_notebooks.py').resolve()} tests/test_files --dir {tmpdir}"
+        f"python {jupy_dir / 'filter_notebooks.py'} {tests_dir / 'test_files'} --dir {tmpdir}"
     )
 
     assert tmpdir.exists() and tmpdir.is_dir()
     for file in tmpdir.iterdir():
-        assert Path("./tests/test_files/" + str(file.stem)[:-8] + ".md").exists()
+        assert (tests_dir / ("test_files/" + str(file.stem)[:-8] + ".md")).exists()
 
     os.system(f"rm -rf {tmpdir}")
 
 
 def test_force():
-    dir = Path("./tests/test_files")
+    dir = tests_dir / "test_files"
+    with open(dir / "test_STUDENT.ipynb", mode="r") as f:
+        text = f.read()
     os.system(
-        f"python {Path('../filter_notebooks.py').resolve()} test_files --dir {dir} --force"
+        f"python {jupy_dir / 'filter_notebooks.py'} {tests_dir / 'test_files'} --dir {dir} --force"
     )
-    with open(dir / "test_STUDENT.ipynb", mode="a+") as f:
-        assert f.read()[-4:] != "TEST"
-        f.write("TEST")
+    with open(dir / "test_STUDENT.ipynb", mode="w+") as f:
+        assert text != f.read()
+        f.write(text)

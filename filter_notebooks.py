@@ -5,7 +5,25 @@ from pathlib import Path
 
 
 def strip_text(text):
+    """
+    Filters text between delimiters from markdown file
+
+    Parameters
+    ----------
+    text : str
+        Text of markdown file to filter
+
+    Returns
+    -------
+    str
+        Filtered markdown text
+    """
+    # First remove text from Python cells (with `# <COGINST>` delimiters)
+    # and replace with a pass statement
     stu_notebook = re.sub(r"# <COGINST>(.*?)</COGINST>", "pass", text)
+
+    # Remove text from markdown cells (with `<COGINST>` delimiters)
+    # and replace with italicized `SOLUTION HERE`
     return re.sub(r"<COGINST>(.*?)</COGINST>", "*SOLUTION HERE*", stu_notebook)
 
 
@@ -27,23 +45,22 @@ def make_student_files(path, outdir, force):
 
     if path.is_file() and path.suffix == ".md":
         with open(path, mode="r") as f:
+            # Apply repr as to escape \n characters
+            # as Regex requires singular line of text
             stu_notebook = strip_text(repr(f.read()))
 
         file_path = outdir / (str(path.stem) + "_STUDENT.md")
-        if force:
-            with open(file_path, mode="w") as f:
-                f.write(eval(stu_notebook))
-        else:
-            if file_path.with_suffix(".ipynb").is_file():
-                print(f"{file_path.with_suffix('.ipynb')} already exists")
-            else:
-                try:
-                    with open(file_path, mode="x") as f:
-                        f.write(eval(stu_notebook))
-                except:
-                    print(f"{file_path} already exists")
+        mode = "w" if force else "x"
 
+        with open(file_path, mode) as f:
+            # Apply eval to convert raw string to string
+            # and recover newline formatting for output file
+            # (Jupytext doesn't properly convert markdown if not done)
+            f.write(eval(stu_notebook))
+
+        # Convert to ipynb, silencing outputs from Jupytext
         os.system(f"jupytext {file_path} --to notebook >/dev/null 2>&1")
+        # Remove student markdown file
         os.system(f"rm {file_path}")
 
     elif path.is_dir():
@@ -56,13 +73,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "--dir", "-d", help="specify out directory for student notebook files"
+        "--dir", "-d", help="specify output directory for student notebook files"
     )
     parser.add_argument(
         "--force",
         "-f",
         help="overwrites existing student notebooks",
-        action="store_true"
+        action="store_true",
     )
     parser.add_argument("files", nargs="*")
 
