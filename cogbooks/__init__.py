@@ -50,9 +50,12 @@ def make_student_files(path: Path, outdir: Path, force: bool):
             stu_notebook = strip_text(repr(f.read()))
 
         file_path = outdir / (str(path.stem) + "_STUDENT.md")
-        mode = "w" if force else "x"
 
-        with open(file_path, mode) as f:
+        if Path(file_path.stem + '.ipynb').exists():
+            print(file_path.stem + '.ipynb' + " exists.. skipping file")
+            return
+
+        with open(file_path, 'w') as f:
             # Apply eval to convert raw string to string
             # and recover newline formatting for output file
             # (Jupytext doesn't properly convert markdown if not done)
@@ -81,21 +84,22 @@ def main():
         "-f",
         help="overwrites existing student notebooks",
         action="store_true",
+        default=False,
     )
     parser.add_argument("files", nargs="*", )
 
     args = parser.parse_args()
 
-    if args.dir is not None:
-        out = Path(args.dir)
-    else:
-        out = Path(str(Path(".").absolute()) + "_STUDENT")
-    if not out.exists():
-        out.mkdir()
-
     for p in args.files:
         p = Path(p)
-        make_student_files(p, p.parent, args.force)
+        if args.dir is not None:
+            out = Path(args.dir)
+
+            if not out.exists():
+                out.mkdir()
+        else:
+            out = p.parent
+        make_student_files(p, out, args.force)
 
 
 if __name__ == "__main__":
