@@ -25,53 +25,80 @@ def test_file_ipynb_doesnt_exist():
 
 
 @pytest.mark.usefixtures("cleandir")
-@settings(deadline=None, max_examples=10)
+@settings(deadline=None, max_examples=20)
 @given(
     num_files=st.sampled_from(range(4)),
-    already_exists=st.lists(st.sampled_from(range(4)), unique=True),
+    data=st.data(),
+    force=st.booleans(),
+    specify_files=st.booleans(),
 )
-def test_multiple_files_in_dir_where_some_exist(num_files: int, already_exists: list):
-    Path("./dummy").mkdir(exist_ok=True)
+def test_multiple_files_in_dir_where_some_exist(
+    num_files: int, data: st.DataObject, force: bool, specify_files: bool
+):
+    # draw the ipynb files that will already exist
+    if num_files:
+        already_exists = data.draw(
+            st.lists(st.sampled_from(range(num_files)), unique=True)
+        )
+    else:
+        already_exists = []
+
+    # prep the directory for the md and ipynb files
+    dummy_dir = Path("./dummy")
+
+    if dummy_dir.exists():
+        shutil.rmtree(dummy_dir)
+
+    dummy_dir.mkdir(exist_ok=False)
+
+    # create the md files
     for i in range(num_files):
         shutil.copy("test_files/test.md", f"dummy/test{i}.md")
 
+    # ensure the ipynb files are not already present
     assert all(
-        [not Path(f"dummy/test{i}_STUDENT.ipynb").exists() for i in range(num_files)]
-    )
+        [not (dummy_dir / f"test{i}_STUDENT.ipynb").exists() for i in range(num_files)]
+    ), "ipynb files are already present prior to running the cogbooks"
 
+    # create pre-existing ipynb files as empty files
     for i in already_exists:
-        Path(f"dummy/test{i}_STUDENT.ipynb").touch()
+        (dummy_dir / f"test{i}_STUDENT.ipynb").touch()
+        assert (
+            os.path.getsize(dummy_dir / f"test{i}_STUDENT.ipynb") == 0
+        ), "pre-existing files should be empty"
 
-    os.system(f"cogbooks dummy")
+    # invoke cogbooks with either the dir as an argument, or sequence of md files
+    if specify_files:
+        list_of_names = " ".join(
+            [f"dummy/test{i}.md" for i in set(list(range(num_files)) + already_exists)]
+        )
+        cmd = f"cogbooks {list_of_names}"
+    else:
+        cmd = f"cogbooks dummy"
+
+    os.system(cmd + (" --force" if force else ""))
+
+    # ensure all ipynb files exist
     assert all(
-        [Path(f"dummy/test{i}_STUDENT.ipynb").exists() for i in range(num_files)]
+        [(dummy_dir / f"test{i}_STUDENT.ipynb").exists() for i in range(num_files)]
     )
-    shutil.rmtree(Path("./dummy"))
 
+    # ensure pre-existing ipynb files are overwritted only when --force was specified
+    # otherwise they should be empty
+    for i in already_exists:
+        if not force:
+            assert (
+                os.path.getsize(f"./dummy/test{i}_STUDENT.ipynb") == 0
+            ), "a pre-existing file was overwritten"
+        else:
+            assert (
+                os.path.getsize(f"./dummy/test{i}_STUDENT.ipynb") > 0
+            ), "--force failed to overwrite pre-existing notebook"
 
-@pytest.mark.usefixtures("cleandir")
-@settings(deadline=None, max_examples=10)
-@given(
-    num_files=st.sampled_from(range(4)),
-    already_exists=st.lists(st.sampled_from(range(4)), unique=True),
-)
-def test_multiple_files_where_some_exist(num_files: int, already_exists: list):
-    Path("./dummy").mkdir(exist_ok=True)
+    # ensure that the ipynb files that created via cogbooks are not empty
     for i in range(num_files):
-        shutil.copy("test_files/test.md", f"dummy/test{i}.md")
-
-    assert all(
-        [not Path(f"dummy/test{i}_STUDENT.ipynb").exists() for i in range(num_files)]
-    )
-
-    for i in already_exists:
-        Path(f"dummy/test{i}_STUDENT.ipynb").touch()
-
-    list_of_names = " ".join(
-        [f"dummy/test{i}.md" for i in set(list(range(num_files)) + already_exists)]
-    )
-    os.system(f"cogbooks {list_of_names}")
-    assert all(
-        [Path(f"dummy/test{i}_STUDENT.ipynb").exists() for i in range(num_files)]
-    )
-    shutil.rmtree(Path("./dummy"))
+        if i in already_exists:
+            continue
+        assert (
+            os.path.getsize(f"./dummy/test{i}_STUDENT.ipynb") > 0
+        ), "the converted notebook is empty"
