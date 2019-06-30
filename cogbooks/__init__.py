@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 
-def strip_text(text):
+def strip_text(text: str) -> str:
     """
     Filters text between delimiters from markdown file
 
@@ -27,7 +27,7 @@ def strip_text(text):
     return re.sub(r"<COGINST>(.*?)</COGINST>", "*SOLUTION HERE*", stu_notebook)
 
 
-def make_student_files(path, outdir, force):
+def make_student_files(path: Path, outdir: Path, force: bool):
     """
     Creates student Jupyter notebooks given Jupytext markdown files
 
@@ -59,9 +59,10 @@ def make_student_files(path, outdir, force):
             f.write(eval(stu_notebook))
 
         # Convert to ipynb, silencing outputs from Jupytext
-        os.system(f"jupytext {file_path} --to notebook >/dev/null 2>&1")
+        print(file_path.absolute())
+        os.system(f'jupytext "{file_path.absolute()}" --to notebook')
         # Remove student markdown file
-        os.system(f"rm {file_path}")
+        os.remove(file_path)
 
     elif path.is_dir():
         for p in path.iterdir():
@@ -69,7 +70,7 @@ def make_student_files(path, outdir, force):
                 make_student_files(p, outdir, force)
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -81,7 +82,7 @@ if __name__ == "__main__":
         help="overwrites existing student notebooks",
         action="store_true",
     )
-    parser.add_argument("files", nargs="*")
+    parser.add_argument("files", nargs="*", )
 
     args = parser.parse_args()
 
@@ -93,4 +94,10 @@ if __name__ == "__main__":
         out.mkdir()
 
     for p in args.files:
-        make_student_files(Path(p), out, args.force)
+        p = Path(p)
+        make_student_files(p, p.parent, args.force)
+
+
+if __name__ == "__main__":
+    main()
+
