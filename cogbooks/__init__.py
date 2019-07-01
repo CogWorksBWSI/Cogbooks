@@ -20,14 +20,16 @@ def strip_text(text: str) -> str:
     """
     # First remove text from Python cells (with `# <COGINST>` delimiters)
     # and replace with a pass statement
-    stu_notebook = re.sub(r"# <COGINST>(.*?)</COGINST>", "pass", text)
+    stu_notebook = re.sub(r"# <COGINST>(.*?)</COGINST>", "pass", text, flags=re.S)
 
     # Remove text from markdown cells (with `<COGINST>` delimiters)
     # and replace with italicized `SOLUTION HERE`
-    stu_notebook = re.sub(r"<COGINST>(.*?)</COGINST>", "*SOLUTION HERE*", stu_notebook)
+    stu_notebook = re.sub(
+        r"<COGINST>(.*?)</COGINST>", "*SOLUTION HERE*", stu_notebook, flags=re.S
+    )
 
     # Remove instructor-only notes from markdown cells (with `<COGNOTE>` delimiters)
-    return re.sub(r"<COGNOTE>(.*?)</COGNOTE>", "", stu_notebook)
+    return re.sub(r"<COGNOTE>(.*?)</COGNOTE>", "", stu_notebook, flags=re.S)
 
 
 def make_student_files(path: Path, outdir: Path, force: bool) -> bool:
@@ -52,9 +54,7 @@ def make_student_files(path: Path, outdir: Path, force: bool) -> bool:
 
     if path.is_file() and path.suffix == ".md":
         with open(path, mode="r") as f:
-            # Apply repr as to escape \n characters
-            # as Regex requires singular line of text
-            stu_notebook = strip_text(repr(f.read()))
+            stu_notebook = strip_text(f.read())
 
         file_path = outdir / (path.name[:-3] + "_STUDENT.md")
 
@@ -63,10 +63,7 @@ def make_student_files(path: Path, outdir: Path, force: bool) -> bool:
             return False
 
         with open(file_path, "w") as f:
-            # Apply eval to convert raw string to string
-            # and recover newline formatting for output file
-            # (Jupytext doesn't properly convert markdown if not done)
-            f.write(eval(stu_notebook))
+            f.write(stu_notebook)
 
         # Convert to ipynb
         os.system(f'jupytext "{file_path.absolute()}" --to notebook')

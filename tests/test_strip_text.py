@@ -4,15 +4,15 @@ import hypothesis.strategies as st
 
 
 @given(
-    pre_code_delim=st.characters(blacklist_characters=("\n")),
-    code_delim=st.characters(blacklist_characters=("\n")),
-    post_code_delim=st.characters(blacklist_characters=("\n")),
-    pre_md_delim=st.characters(blacklist_characters=("\n")),
-    md_delim=st.characters(blacklist_characters=("\n")),
-    post_md_delim=st.characters(blacklist_characters=("\n")),
-    pre_note_delim=st.characters(blacklist_characters=("\n")),
-    note_delim=st.characters(blacklist_characters=("\n")),
-    post_note_delim=st.characters(blacklist_characters=("\n")),
+    pre_code_delim=st.characters(),
+    code_delim=st.characters(),
+    post_code_delim=st.characters(),
+    pre_md_delim=st.characters(),
+    md_delim=st.characters(),
+    post_md_delim=st.characters(),
+    pre_note_delim=st.characters(),
+    note_delim=st.characters(),
+    post_note_delim=st.characters(),
 )
 def test_combined_rand_text(
     pre_code_delim,
@@ -183,4 +183,4 @@ def test_ex_ipynb():
     ```
     """
 
-    assert eval(strip_text(repr(text))) == filtered_text
+    assert strip_text(text) == filtered_text
