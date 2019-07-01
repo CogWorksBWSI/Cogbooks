@@ -4,14 +4,14 @@ import hypothesis.strategies as st
 
 
 @given(
-    pre_code_delim=st.characters(),
-    code_delim=st.characters(),
-    post_code_delim=st.characters(),
-    pre_md_delim=st.characters(),
-    md_delim=st.characters(),
-    post_md_delim=st.characters(),
+    pre_code_delim=st.characters(blacklist_characters=("\n")),
+    code_delim=st.characters(blacklist_characters=("\n")),
+    post_code_delim=st.characters(blacklist_characters=("\n")),
+    pre_md_delim=st.characters(blacklist_characters=("\n")),
+    md_delim=st.characters(blacklist_characters=("\n")),
+    post_md_delim=st.characters(blacklist_characters=("\n")),
 )
-def test_rand_text(
+def test_combined_rand_text(
     pre_code_delim, code_delim, post_code_delim, pre_md_delim, md_delim, post_md_delim
 ):
     text = (
