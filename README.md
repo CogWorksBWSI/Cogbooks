@@ -30,3 +30,47 @@ cogbooks day1_directory/ activity1.md activity2.md
 ```
 
 By default, existing notebooks will not be overwritten. Specifying `--force` or `-f` will have Cogbooks rewrite existing student notebooks.
+
+
+# Delimiting
+Any instructor-only markdown file should be properly delimited. In Python code, use:
+```python
+set-up code here
+# <COGINST>
+instructor-only code here
+# </COGINST>
+```
+Running Cogbooks will then yield:
+```python
+set-up code here
+pass
+```
+
+In markdown, use:
+```markdown
+question here
+<COGINST>
+instructor-only answer here
+</COGINST>
+```
+
+yielding,
+```markdown
+question here
+*SOLUTION HERE*
+```
+
+Lastly, to leave an instructor-only note in a markdown cell, use:
+```markdown
+random text here
+<COGNOTE>
+instructor-only note here
+</COGNOTE>
+more random text here
+```
+
+which results in,
+```markdown
+random text here
+more random text here
+```
