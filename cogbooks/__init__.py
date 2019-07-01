@@ -24,7 +24,10 @@ def strip_text(text: str) -> str:
 
     # Remove text from markdown cells (with `<COGINST>` delimiters)
     # and replace with italicized `SOLUTION HERE`
-    return re.sub(r"<COGINST>(.*?)</COGINST>", "*SOLUTION HERE*", stu_notebook)
+    stu_notebook = re.sub(r"<COGINST>(.*?)</COGINST>", "*SOLUTION HERE*", stu_notebook)
+
+    # Remove instructor-only notes from markdown cells (with `<COGNOTE>` delimiters)
+    return re.sub(r"<COGNOTE>(.*?)</COGNOTE>", "", stu_notebook)
 
 
 def make_student_files(path: Path, outdir: Path, force: bool) -> bool:
@@ -55,11 +58,11 @@ def make_student_files(path: Path, outdir: Path, force: bool) -> bool:
 
         file_path = outdir / (path.name[:-3] + "_STUDENT.md")
 
-        if not force and (file_path.parent / (file_path.stem + '.ipynb')).exists():
-            print(file_path.stem + '.ipynb' + " exists.. skipping file")
+        if not force and (file_path.parent / (file_path.stem + ".ipynb")).exists():
+            print(file_path.stem + ".ipynb" + " exists.. skipping file")
             return False
 
-        with open(file_path, 'w') as f:
+        with open(file_path, "w") as f:
             # Apply eval to convert raw string to string
             # and recover newline formatting for output file
             # (Jupytext doesn't properly convert markdown if not done)
@@ -97,7 +100,7 @@ def main():
         help="overwrites existing student notebooks",
         action="store_true",
     )
-    parser.add_argument("files", nargs="*", )
+    parser.add_argument("files", nargs="*")
 
     args = parser.parse_args()
 
@@ -117,9 +120,10 @@ def main():
         written |= make_student_files(p, out, args.force)
 
     if not written:
-        print(f"No files were written. The provided file-paths were: {' '.join(args.files)}")
+        print(
+            f"No files were written. The provided file-paths were: {' '.join(args.files)}"
+        )
 
 
 if __name__ == "__main__":
     main()
-
