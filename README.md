@@ -52,15 +52,17 @@ By default, existing notebooks will not be overwritten. Specifying `--force` or 
 
 # Delimiting
 Any instructor-only markdown file should be properly delimited. In Python code, use:
+````
 ```python
-set-up code here
+# set-up code here
 # <COGINST>
 instructor-only code here
 # </COGINST>
 ```
+````
 Running Cogbooks will then yield:
 ```python
-set-up code here
+# set-up code here
 pass
 ```
 
@@ -92,3 +94,26 @@ which results in,
 random text here
 more random text here
 ```
+
+## A Brief Primer on the Jupytext-Markdown Syntax
+See the [official docs](https://jupytext.readthedocs.io/en/latest/formats.html#markdown-and-r-markdown) for a full rundown on Jupytext's syntax for encoding notebooks as markdown files.
+
+The quick version of it is: 
+
+Markdown cells are delimited by: 
+
+````
+<!-- #region -->
+Anything in here, including code-blocks will be converted
+into a markdown cell withing the notebook
+<!-- #endregion -->
+````
+
+
+Python cells are delimited by:
+````
+```python
+# this content will be converted into a python code-cell
+# within the notebook
+```
+````
