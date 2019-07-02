@@ -52,7 +52,7 @@ def make_student_files(path: Path, outdir: Path, force: bool) -> bool:
     Returns False if no file was written
     """
 
-    if path.is_file() and path.suffix == ".md":
+    if path.is_file() and path.suffix == ".md" and path.stem != "README":
         with open(path, mode="r") as f:
             stu_notebook = strip_text(f.read())
 
