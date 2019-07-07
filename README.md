@@ -63,7 +63,7 @@ instructor-only code here
 Running Cogbooks will then yield:
 ```python
 # set-up code here
-pass
+# STUDENT CODE HERE
 ```
 
 In markdown, use:

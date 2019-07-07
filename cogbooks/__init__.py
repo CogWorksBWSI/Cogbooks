@@ -19,8 +19,8 @@ def strip_text(text: str) -> str:
         Filtered markdown text
     """
     # First remove text from Python cells (with `# <COGINST>` delimiters)
-    # and replace with a pass statement
-    stu_notebook = re.sub(r"# <COGINST>(.*?)</COGINST>", "pass", text, flags=re.S)
+    # and replace with a STUDENT CODE HERE comment
+    stu_notebook = re.sub(r"# <COGINST>(.*?)</COGINST>", "# STUDENT CODE HERE", text, flags=re.S)
 
     # Remove text from markdown cells (with `<COGINST>` delimiters)
     # and replace with italicized `SOLUTION HERE`

@@ -45,7 +45,7 @@ def test_combined_rand_text(
 
     filtered_text = (
         pre_code_delim
-        + "pass"
+        + "# STUDENT CODE HERE"
         + post_code_delim
         + pre_md_delim
         + "*SOLUTION HERE*"
@@ -53,7 +53,6 @@ def test_combined_rand_text(
         + pre_note_delim
         + post_note_delim
     )
-
     assert strip_text(text) == filtered_text
 
 
@@ -160,13 +159,13 @@ def test_ex_ipynb():
     
     ```python
     # 3.7 SOLUTION
-    pass
+    # STUDENT CODE HERE
     ```
     
     3.8 Perform an FFT on this real-valued data, and plot $|c_{k}|$ vs $\nu_{k}$. The y-axis should be on a log scale. The $\nu_{k}$-axis should be scaled to be in units of [1 / days].
     
     ```python
-    pass
+    # STUDENT CODE HERE
     ```
     
     3.9 We want to smooth this stock market data. We can do this by "removing" the high-frequency coefficients of its Fourier spectrum. Try zeroing-out the top 90% high-frequency coefficients, and then perform an inverse FFT using these altered coefficients. Plot the "recovered" signal on top of a semi-transparent version of the original data (use the plot parameter `alpha=0.5`). Then repeat this, but with zeroing out the top 98% coefficients. In both of these cases, on what scale are the fluctuations being filtered out?
@@ -174,12 +173,12 @@ def test_ex_ipynb():
     
     ```python
     # 3.9 SOLUTION
-    pass
+    # STUDENT CODE HERE
     ```
     
     ```python
     # 3.9 SOLUTION
-    pass
+    # STUDENT CODE HERE
     ```
     """
 
