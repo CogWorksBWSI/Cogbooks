@@ -13,6 +13,9 @@ import hypothesis.strategies as st
     pre_note_delim=st.characters(),
     note_delim=st.characters(),
     post_note_delim=st.characters(),
+    pre_line_delim=st.characters(),
+    line_delim=st.characters(blacklist_characters="\n"),
+    post_line_delim=st.characters(),
 )
 def test_combined_rand_text(
     pre_code_delim,
@@ -24,6 +27,9 @@ def test_combined_rand_text(
     pre_note_delim,
     note_delim,
     post_note_delim,
+    pre_line_delim,
+    line_delim,
+    post_line_delim,
 ):
     text = (
         pre_code_delim
@@ -41,6 +47,11 @@ def test_combined_rand_text(
         + note_delim
         + "</COGNOTE>"
         + post_note_delim
+        + pre_line_delim
+        + "\n"
+        + line_delim
+        + "# <COGLINE>\n"
+        + post_line_delim
     )
 
     filtered_text = (
@@ -52,6 +63,11 @@ def test_combined_rand_text(
         + post_md_delim
         + pre_note_delim
         + post_note_delim
+        + pre_line_delim
+        + "\n"
+        + line_delim[: len(line_delim) - len(line_delim.lstrip())]
+        + "# STUDENT CODE HERE\n"
+        + post_line_delim
     )
     assert strip_text(text) == filtered_text
 
@@ -80,10 +96,10 @@ def test_ex_ipynb():
     
     ```python
     # 3.7 SOLUTION
-    # <COGINST>
-    with open("data/dow.txt", 'r') as R:
-        data = np.asarray([float(i) for i in R])
+    with open("data/dow.txt", 'r') as R: # <COGLINE>
+        data = np.asarray([float(i) for i in R]) # <COGLINE>
     
+    # <COGINST>
     fig, ax = plt.subplots()
     ax.plot(data)
     ax.grid()
@@ -159,6 +175,9 @@ def test_ex_ipynb():
     
     ```python
     # 3.7 SOLUTION
+    # STUDENT CODE HERE
+        # STUDENT CODE HERE
+    
     # STUDENT CODE HERE
     ```
     
