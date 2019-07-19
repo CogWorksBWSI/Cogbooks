@@ -20,7 +20,9 @@ def strip_text(text: str) -> str:
     """
     # First remove text from Python cells (with `# <COGINST>` delimiters)
     # and replace with a STUDENT CODE HERE comment
-    stu_notebook = re.sub(r"# <COGINST>(.*?)</COGINST>", "# STUDENT CODE HERE", text, flags=re.S)
+    stu_notebook = re.sub(
+        r"# <COGINST>(.*?)</COGINST>", "# STUDENT CODE HERE", text, flags=re.S
+    )
 
     # Remove text from markdown cells (with `<COGINST>` delimiters)
     # and replace with italicized `SOLUTION HERE`
@@ -29,7 +31,11 @@ def strip_text(text: str) -> str:
     )
 
     # Remove instructor-only notes from markdown cells (with `<COGNOTE>` delimiters)
-    return re.sub(r"<COGNOTE>(.*?)</COGNOTE>", "", stu_notebook, flags=re.S)
+    stu_notebook = re.sub(r"<COGNOTE>(.*?)</COGNOTE>", "", stu_notebook, flags=re.S)
+
+    # Remove single lines from code (with `<COGLINE>` addendum), preserving whitespace
+    # and replace with a STUDENT CODE HERE comment
+    return re.sub(r"\S(?<!\s)(.*?)<COGLINE>", "# STUDENT CODE HERE", stu_notebook)
 
 
 def make_student_files(path: Path, outdir: Path, force: bool) -> bool:
