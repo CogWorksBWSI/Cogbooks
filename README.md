@@ -1,4 +1,6 @@
+[![PyPi version](https://img.shields.io/pypi/v/cogbooks.svg)](https://pypi.python.org/pypi/cogbooks)
 [![Build Status](https://travis-ci.com/CogWorksBWSI/Cogbooks.svg?token=uPrqP4yp9p9borkbzEZh&branch=master)](https://travis-ci.com/CogWorksBWSI/Cogbooks)
+[![Tested with Hypothesis](https://img.shields.io/badge/hypothesis-tested-brightgreen.svg)](https://hypothesis.readthedocs.io/)
 
 # Cogbooks
 Provides a tool for CogWorks instructors and TAs to filter instructor-only material out of [Jupytext markdown](https://jupytext.readthedocs.io/en/latest/introduction.html) files to create student Jupyter notebooks.
