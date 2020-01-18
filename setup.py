@@ -1,8 +1,10 @@
+import versioneer
 from setuptools import setup, find_packages
 
 setup(
     name='cogbooks',
-    version='0.1',
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     author='Petar Griggs',
     author_email='marrs2k@gmail.com',
     description='Use jupytext to convert instructor markdown files to student notebooks',
