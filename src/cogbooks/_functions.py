@@ -61,26 +61,31 @@ def make_student_files(path: Path, outdir: Path, force: bool) -> bool:
     """
 
     if path.is_file() and path.suffix == ".md" and path.stem != "README":
-        with open(path, mode="r") as f:
-            stu_notebook = strip_text(f.read())
+        with path.open(mode="r") as f:
+            student_notebook_text = strip_text(f.read())
 
-        file_path = outdir / (path.name[:-3] + "_STUDENT.md")
+        student_markdown_path = outdir / (path.stem + "_STUDENT.md")
+        student_notebook_path = student_markdown_path.parent / (
+            student_markdown_path.stem + ".ipynb"
+        )
 
-        if not force and (file_path.parent / (file_path.stem + ".ipynb")).exists():
-            print(file_path.stem + ".ipynb" + " exists.. skipping file")
+        if not force and student_notebook_path.exists():
+            print(student_notebook_path.name + " exists.. skipping file")
             return False
 
+        student_markdown_was_written = False
         try:
-            with file_path.open("w") as f:
-                f.write(stu_notebook)
+            with student_markdown_path.open("w") as f:
+                f.write(student_notebook_text)
+            student_markdown_was_written = True
 
             # Convert to ipynb
-            jupytext(["--to", "notebook", str(file_path.absolute())])
+            jupytext(["--to", "notebook", str(student_markdown_path.absolute())])
 
         finally:
-            if file_path.exists():
+            if student_markdown_path.exists() and student_markdown_was_written:
                 # Remove student markdown file
-                os.remove(file_path)
+                os.remove(student_markdown_path)
         return True
 
     elif path.is_file():

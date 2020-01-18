@@ -25,14 +25,11 @@ def test_file_ipynb_doesnt_exist():
 
 
 @pytest.mark.usefixtures("cleandir")
-def test_file_preexisting_student_md_isnt_deleted():
-    root = Path(".") / "test_files"
-    student_markdown = root / "test_STUDENT.md"
-    student_markdown.touch()
-    assert set(i.name for i in root.glob("*.md")) == {"test_STUDENT.md", "test.md"}
-    os.system(f"cogbooks test_files/test.md")
-    assert set(i.name for i in root.glob("*.md")) == {"test_STUDENT.md", "test.md"}
-    assert set(i.name for i in root.glob("*.md"))
+def test_no_extra_md_files_are_written_or_removed():
+    root = Path("./test_files").resolve()
+    all_files = {path: os.path.getsize(path) for path in root.glob("*.md")}
+    os.system(f"cogbooks --force test_files")
+    assert all_files == {path: os.path.getsize(path) for path in root.glob("*.md")}
 
 
 @pytest.mark.usefixtures("cleandir")
