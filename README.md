@@ -2,6 +2,12 @@
 [![Build Status](https://travis-ci.com/CogWorksBWSI/Cogbooks.svg?token=uPrqP4yp9p9borkbzEZh&branch=master)](https://travis-ci.com/CogWorksBWSI/Cogbooks)
 [![Tested with Hypothesis](https://img.shields.io/badge/hypothesis-tested-brightgreen.svg)](https://hypothesis.readthedocs.io/)
 
+- [Cogbooks](#cogbooks)
+  - [Installation Instructions](#installation-instructions)
+  - [Usage](#usage)
+  - [Forms of Delimiters](#forms-of-delimiters)
+  - [A Brief Primer on the Jupytext-Markdown Syntax](#a-brief-primer-on-the-jupytext-markdown-syntax)
+
 # Cogbooks
 Provides a tool for CogWorks instructors and TAs to filter instructor-only material out of [Jupytext markdown](https://jupytext.readthedocs.io/en/latest/introduction.html) files to create student Jupyter notebooks.
 
@@ -28,14 +34,12 @@ Make a list of the first 100 perfect squares
 ```
 
 
-# Installation Instructions
-Clone this repository, navigate to it, and run
-
+## Installation Instructions
 ```shell
-python setup.py install
+pip install cogbooks
 ```
 
-# Usage
+## Usage
 After installing Cogbooks, to convert a markdown file to a student notebook, run
 ```shell
 cogbooks activitiy.md
@@ -54,7 +58,7 @@ cogbooks day1_directory/ activity1.md activity2.md
 By default, existing notebooks will not be overwritten. Specifying `--force` or `-f` will have Cogbooks rewrite existing student notebooks.
 
 
-# Delimiting
+## Forms of Delimiters
 Any instructor-only markdown file should be properly delimited. To delimit blocks of Python code, use:
 ````
 ```python
