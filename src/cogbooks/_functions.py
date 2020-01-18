@@ -1,7 +1,9 @@
 import argparse
-import re
 import os
+import re
 from pathlib import Path
+
+from jupytext.cli import jupytext
 
 
 def strip_text(text: str) -> str:
@@ -68,13 +70,17 @@ def make_student_files(path: Path, outdir: Path, force: bool) -> bool:
             print(file_path.stem + ".ipynb" + " exists.. skipping file")
             return False
 
-        with open(file_path, "w") as f:
-            f.write(stu_notebook)
+        try:
+            with file_path.open("w") as f:
+                f.write(stu_notebook)
 
-        # Convert to ipynb
-        os.system(f'jupytext "{file_path.absolute()}" --to notebook')
-        # Remove student markdown file
-        os.remove(file_path)
+            # Convert to ipynb
+            jupytext(["--to", "notebook", str(file_path.absolute())])
+
+        finally:
+            if file_path.exists():
+                # Remove student markdown file
+                os.remove(file_path)
         return True
 
     elif path.is_file():
@@ -126,5 +132,3 @@ def main():
         print(
             f"No files were written. The provided file-paths were: {' '.join(args.files)}"
         )
-
-
