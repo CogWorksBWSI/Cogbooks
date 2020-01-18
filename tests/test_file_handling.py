@@ -25,6 +25,14 @@ def test_file_ipynb_doesnt_exist():
 
 
 @pytest.mark.usefixtures("cleandir")
+def test_no_extra_md_files_are_written_or_removed():
+    root = Path("./test_files").resolve()
+    all_files = {path: os.path.getsize(path) for path in root.glob("*.md")}
+    os.system(f"cogbooks --force test_files")
+    assert all_files == {path: os.path.getsize(path) for path in root.glob("*.md")}
+
+
+@pytest.mark.usefixtures("cleandir")
 @settings(deadline=None, max_examples=20)
 @given(
     num_files=st.sampled_from(range(4)),
@@ -86,14 +94,15 @@ def test_multiple_files_in_dir_where_some_exist(
     # ensure pre-existing ipynb files are overwritten only when --force was specified
     # otherwise they should be empty
     for i in already_exists:
+        file = f"./dummy/test{i}_STUDENT.ipynb"
         if not force:
             assert (
-                os.path.getsize(f"./dummy/test{i}_STUDENT.ipynb") == 0
-            ), "a pre-existing file was overwritten"
+                os.path.getsize(file) == 0
+            ), f"a pre-existing file was overwritten: {file}"
         else:
             assert (
-                os.path.getsize(f"./dummy/test{i}_STUDENT.ipynb") > 0
-            ), "--force failed to overwrite pre-existing notebook"
+                os.path.getsize(file) > 0
+            ), f"--force failed to overwrite pre-existing notebook: {file}"
 
     # ensure that the ipynb files that created via cogbooks are not empty
     for i in range(num_files):
