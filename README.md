@@ -7,6 +7,8 @@
   - [Usage](#usage)
   - [Forms of Delimiters](#forms-of-delimiters)
   - [A Brief Primer on the Jupytext-Markdown Syntax](#a-brief-primer-on-the-jupytext-markdown-syntax)
+  - [Creating a ipynb File with the Solutions Included](#creating-a-ipynb-file-with-the-solutions-included)
+
 
 # Cogbooks
 Provides a tool for CogWorks instructors and TAs to filter instructor-only material out of [Jupytext markdown](https://jupytext.readthedocs.io/en/latest/introduction.html) files to create student Jupyter notebooks.
@@ -140,3 +142,11 @@ Python cells are delimited by:
 # within the notebook
 ```
 ````
+
+## Creating a ipynb File with the Solutions Included
+
+To convert a jupytext-markdown file to a standard Jupyter notebook, retaining the solutions, simply use `jupytext` to do the conversion:
+
+```shell
+jupytext --to notebook my_markdown_file.md
+```
