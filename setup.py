@@ -26,5 +26,5 @@ setup(
     entry_points={'console_scripts': ['cogbooks = cogbooks:main']},
     python_requires=">=3.6",
     tests_require=['pytest', 'hypothesis'],
-    install_requires=['jupytext'],
+    install_requires=['jupytext >= 1.2.0'],
 )
