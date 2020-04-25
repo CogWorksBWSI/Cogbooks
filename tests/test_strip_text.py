@@ -1,4 +1,4 @@
-from cogbooks._functions import strip_text
+from cogbooks import strip_text
 from hypothesis import given
 import hypothesis.strategies as st
 
