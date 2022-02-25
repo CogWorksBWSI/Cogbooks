@@ -90,15 +90,14 @@ Applying Cogbooks will again result in:
 # STUDENT CODE HERE
 ```
 
-To leave a "stubbed" assignment expression, one can use `<COGSTUB>`:
+To leave a "stubbed" assignment expression, one can use `<COGSTUB>` to the right of an assignment (i.e. an expression using `=`):
 
 ````
 ```python
-# set-up code here
 x = 33.1 # <COGSTUB>  compute `x`
 ```
 ````
-Applying Cogbooks will again result in:
+Applying Cogbooks will leave behind a "stub" for that assignment:
 
 ```python
 x = # compute `x`
