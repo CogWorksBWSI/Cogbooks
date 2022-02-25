@@ -5,6 +5,9 @@ from pathlib import Path
 
 from jupytext.cli import jupytext
 
+JUPYTEXT_HEADER = """---
+jupyter:
+  jupytext:"""
 
 def strip_text(text: str) -> str:
     """
@@ -62,7 +65,14 @@ def make_student_files(path: Path, outdir: Path, force: bool) -> bool:
 
     if path.is_file() and path.suffix == ".md" and path.stem != "README":
         with path.open(mode="r") as f:
-            student_notebook_text = strip_text(f.read())
+            file_contents = f.read()
+        
+        if not file_contents.startswith(JUPYTEXT_HEADER):
+            print(path.name + " is not a jupytext-formatted markdown file")
+            return False
+
+        student_notebook_text = strip_text(file_contents)
+        del file_contents
 
         student_markdown_path = outdir / (path.stem + "_STUDENT.md")
         student_notebook_path = student_markdown_path.parent / (

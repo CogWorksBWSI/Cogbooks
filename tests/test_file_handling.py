@@ -13,6 +13,7 @@ def test_dir_ipynb_doesnt_exist():
     assert not dest.exists()
     os.system(f"cogbooks test_files")
     assert dest.exists()
+    assert len(list((Path(".") / "test_files").glob("*.ipynb"))) == 1
 
 
 @pytest.mark.usefixtures("cleandir")
