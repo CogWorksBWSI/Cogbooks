@@ -61,7 +61,7 @@ By default, existing notebooks will not be overwritten. Specifying `--force` or 
 
 
 ## Forms of Delimiters
-Any instructor-only markdown file should be properly delimited. To delimit blocks of Python code, use:
+Any instructor-only markdown file should be properly delimited. To delimit blocks of Python code, use `<COGINST>`:
 ````
 ```python
 # set-up code here
@@ -77,7 +77,7 @@ Running Cogbooks will then yield:
 # STUDENT CODE HERE
 ```
 
-Alternatively, to remove single lines of code, use:
+Alternatively, to remove single lines of code, use `<COGLINE>`:
 ````
 ```python
 # set-up code here
@@ -88,6 +88,20 @@ Applying Cogbooks will again result in:
 ```python
 # set-up code here
 # STUDENT CODE HERE
+```
+
+To leave a "stubbed" assignment expression, one can use `<COGSTUB>`:
+
+````
+```python
+# set-up code here
+x = 33.1 # <COGSTUB>  compute `x`
+```
+````
+Applying Cogbooks will again result in:
+
+```python
+x = # compute `x`
 ```
 
 

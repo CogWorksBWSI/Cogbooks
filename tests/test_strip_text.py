@@ -1,21 +1,30 @@
 from cogbooks import strip_text
 from hypothesis import given
 import hypothesis.strategies as st
+from functools import wraps
+
+
+def contains_cogbook_tag(text: str) -> bool:
+    return all(item not in text for item in ["<COGINST>", "</COGINST>", "<COGINST>", "</COGNOTE>", "<COGLINE>", "<COGSTUB>"])
+
+
+def filtered_text(*arg, **kwargs):
+    return st.text(*arg, **kwargs).filter(contains_cogbook_tag)
 
 
 @given(
-    pre_code_delim=st.characters(),
-    code_delim=st.characters(),
-    post_code_delim=st.characters(),
-    pre_md_delim=st.characters(),
-    md_delim=st.characters(),
-    post_md_delim=st.characters(),
-    pre_note_delim=st.characters(),
-    note_delim=st.characters(),
-    post_note_delim=st.characters(),
-    pre_line_delim=st.characters(),
-    line_delim=st.characters(blacklist_characters="\n"),
-    post_line_delim=st.characters(),
+    pre_code_delim=filtered_text(),
+    code_delim=filtered_text(),
+    post_code_delim=filtered_text(),
+    pre_md_delim=filtered_text(),
+    md_delim=filtered_text(),
+    post_md_delim=filtered_text(),
+    pre_note_delim=filtered_text(),
+    note_delim=filtered_text(),
+    post_note_delim=filtered_text(),
+    pre_line_delim=filtered_text(),
+    line_delim=filtered_text(st.characters(blacklist_characters="\n")),
+    post_line_delim=filtered_text(),
 )
 def test_combined_rand_text(
     pre_code_delim,
@@ -72,6 +81,20 @@ def test_combined_rand_text(
     assert strip_text(text) == filtered_text
 
 
+text_strat = filtered_text().filter(lambda x: "=" not in x)
+
+
+@given(pre=filtered_text().filter(lambda x: "=" not in x),
+       answer=filtered_text(alphabet="abc123", min_size=1).filter(lambda x: "=" not in x),
+       description=filtered_text().filter(lambda x: "=" not in x),
+       )
+def test_cogstub(pre: str, answer: str, description: str):
+
+    original_text = f"{pre} = {answer} # <COGSTUB> {description}"
+    filtered_text = f"{pre} = # {description}"
+    assert strip_text(original_text) == filtered_text
+
+
 def test_ex_ipynb():
     text = """
     <!-- #region -->
@@ -121,6 +144,8 @@ def test_ex_ipynb():
     ax.set_xlabel("Frequency [1 / days]")
     ax.set_yscale("log")
     # </COGINST>
+
+    z = 1 # <COGSTUB> compute `z`
     ```
     
     3.9 We want to smooth this stock market data. We can do this by "removing" the high-frequency coefficients of its Fourier spectrum. Try zeroing-out the top 90% high-frequency coefficients, and then perform an inverse FFT using these altered coefficients. Plot the "recovered" signal on top of a semi-transparent version of the original data (use the plot parameter `alpha=0.5`). Then repeat this, but with zeroing out the top 98% coefficients. In both of these cases, on what scale are the fluctuations being filtered out?
@@ -185,6 +210,8 @@ def test_ex_ipynb():
     
     ```python
     # STUDENT CODE HERE
+
+    z = # compute `z`
     ```
     
     3.9 We want to smooth this stock market data. We can do this by "removing" the high-frequency coefficients of its Fourier spectrum. Try zeroing-out the top 90% high-frequency coefficients, and then perform an inverse FFT using these altered coefficients. Plot the "recovered" signal on top of a semi-transparent version of the original data (use the plot parameter `alpha=0.5`). Then repeat this, but with zeroing out the top 98% coefficients. In both of these cases, on what scale are the fluctuations being filtered out?

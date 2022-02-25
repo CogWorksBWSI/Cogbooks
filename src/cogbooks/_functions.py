@@ -40,7 +40,15 @@ def strip_text(text: str) -> str:
 
     # Remove single lines from code (with `<COGLINE>` addendum), preserving whitespace
     # and replace with a STUDENT CODE HERE comment
-    return re.sub(r"\S(?<!\s)(.*?)<COGLINE>", "# STUDENT CODE HERE", stu_notebook)
+    stu_notebook = re.sub(r"\S(?<!\s)(.*?)<COGLINE>", "# STUDENT CODE HERE", stu_notebook)
+
+    # Replace expression to the right of a `=` and left of `<COGSTUB>` with a comment.
+    # z = 1 # <COGSTUB> compute `z`
+    # z = # compute `z`
+    stu_notebook = re.sub(r"=.\S(?<!\s)(.*?)<COGSTUB>", "= #", stu_notebook)
+
+    return stu_notebook
+
 
 
 def make_student_files(path: Path, outdir: Path, force: bool) -> bool:
