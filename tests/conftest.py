@@ -28,6 +28,7 @@ def cleandir() -> str:
         os.mkdir('test_files')
         dest = Path.cwd() / 'test_files'
         shutil.copy(data_dir / 'test.md', dest)
+        shutil.copy(data_dir / 'not_jupytext.md', dest)
         shutil.copy(data_dir / 'test_STUDENT.ipynb', dest)
         yield tmpdirname
         os.chdir(old_dir)
